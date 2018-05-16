@@ -148,140 +148,130 @@ def login(s, uname, passw, api_token):
 def logout(s):
 	printLog('Logging out...')
 	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/users/logout')
-	printAndCheckStatusCode(r)
-	s.close()
+	if printAndCheckStatusCode(r):
+		s.close()
+	else:
+		printError("failed to logout somehow")
 
 #get an agents pass phrase based on agentID - so far I haven't needed it
 def getPassPhrase(s, agentID):
 	printLog('Fetching PassPhrase for ' + str(agentID))
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/'+ agentID + '/passphrase')
-		if printAndCheckStatusCode(r):
-			thePassPhrase = get_all(r.json(), 'passphrase').pop()
-			return thePassPhrase
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/'+ agentID + '/passphrase')
+	if printAndCheckStatusCode(r):
+		thePassPhrase = get_all(r.json(), 'passphrase').pop()
+		return thePassPhrase
+	else:
 		printError("failed to fetch pass phrase ")
 	
 #you can get the UUID from the agentID - don't ask me why there are so many different IDs
 def getAgentUUID(s,agentID):
 	printLog('Fetching UUID for ' + str(agentID))
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID)
-		if printAndCheckStatusCode(r):
-			agentUUID = get_all(r.json(), 'uuid').pop()
-			return agentUUID
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID)
+	if printAndCheckStatusCode(r):
+		agentUUID = get_all(r.json(), 'uuid').pop()
+		return agentUUID
+	else:
 		printError("failed to fetch agent UUID ")
 
 # get a JSON response of all users and apparently everything about them
 # this can easily be parsed using get_all() but I've barely needed to use this function
 def listUsers(s):
 	printLog('listing all users...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
-		printAndCheckStatusCode(r)
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	if printAndCheckStatusCode(r):
 		print r.json()
-	except:
+	else:
 		printError("failed to list all users ")
 
 #get a JSON response of agent applications based on agentID
 def getAgentApplications(s, agentID):
 	printLog('listing agent applications...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID + '/applications')
-		if printAndCheckStatusCode(r):
-			return r.json()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID + '/applications')
+	if printAndCheckStatusCode(r):
+		return r.json()
+	else:
 		printError("failed to list agent applications ")
 
 #gets a JSON response based on the agentUUID 
 def getByUUID(s, agentUUID):
 	printLog('getting agent by UUID...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/by-uuid/' + agentUUID)
-		if printAndCheckStatusCode(r):
-			print r.json()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/by-uuid/' + agentUUID)
+	if printAndCheckStatusCode(r):
+		print r.json()
+	else:
 		printError("failed to get agent by UUID ")
 
 #useless base method
 def iterator(s):
 	printLog('iterator...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator')
-		if printAndCheckStatusCode(r):
-			data = json.loads(r.content)
-			print data['data']
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator')
+	if printAndCheckStatusCode(r):
+		data = json.loads(r.content)
+		print data['data']
+	else:
 		printError("failed utilize iterator ")
 
 #this should be how we find ids
 def iteratorFindByName(s, name):
 	printLog('iterator finding by name...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + name + '&limit=1')
-		if printAndCheckStatusCode(r):
-			return get_all(r.json(), 'id').pop()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + name + '&limit=1')
+	if printAndCheckStatusCode(r):
+		return get_all(r.json(), 'id').pop()
+	else:
 		printError("failed to find by name ")
 
 # this should be how we find ids (probably more useful b/c ip)
 def iteratorFindAgentIDByIP(s, ip):
 	printLog('iterator finding ID by IP...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
-		if printAndCheckStatusCode(r):
-			return get_all(r.json(), 'id').pop()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	if printAndCheckStatusCode(r):
+		return get_all(r.json(), 'id').pop()
+	else:
 		printError("failed to find by IP ")
 
 # not really used since I haven't found a use for UUID's yet
 def iteratorFindAgentUUIDByIP(s, ip):
 	printLog('iterator UUID finding by IP...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
-		if printAndCheckStatusCode(r):
-			return get_all(r.json(), 'uuid').pop()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	if printAndCheckStatusCode(r):
+		return get_all(r.json(), 'uuid').pop()
+	else:
 		printError("failed to find by IP ")
 
 # returns agent information based on ip
 def getAgentInformation(s, ip):
 	printLog('returning Agent Information...')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
-		if printAndCheckStatusCode(r):
-			machineName = get_all(r.json(), 'computer_name').pop()
-			agentID = get_all(r.json(), 'id').pop()
-			UUID = get_all(r.json(), 'uuid').pop()
-			isDecomissioned = get_all(r.json(), 'is_decommissioned').pop()
-			networkStatus = get_all(r.json(), 'network_status').pop()
-			strbuilder = '\nmachineName: '+ str(machineName) + '\nip: ' + ip + '\nagentID: '+ str(agentID) + '\nUUID: '+ str(UUID)+ '\nis decommissioned: '+ str(isDecomissioned)+ '\nnetwork status: '+ str(networkStatus)+ '\n'
-			return strbuilder
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	if printAndCheckStatusCode(r):
+		machineName = get_all(r.json(), 'computer_name').pop()
+		agentID = get_all(r.json(), 'id').pop()
+		UUID = get_all(r.json(), 'uuid').pop()
+		isDecomissioned = get_all(r.json(), 'is_decommissioned').pop()
+		networkStatus = get_all(r.json(), 'network_status').pop()
+		strbuilder = '\nmachineName: '+ str(machineName) + '\nip: ' + ip + '\nagentID: '+ str(agentID) + '\nUUID: '+ str(UUID)+ '\nis decommissioned: '+ str(isDecomissioned)+ '\nnetwork status: '+ str(networkStatus)+ '\n'
+		return strbuilder
+	else:
 		printError("failed to find agent information ")
 
 # probably never need to do this again
 def getAllAgentID(s):
 	printLog('Fetching All agent IDs')
-	try:
-		#r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&skip=300&include_decommissioned=true')
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&include_decommissioned=true')
-		if printAndCheckStatusCode(r):
-			agentID = get_all(r.json(), 'id').pop()
-			return agentID
-	except:
+	#r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&skip=300&include_decommissioned=true')
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&include_decommissioned=true')
+	if printAndCheckStatusCode(r):
+		agentID = get_all(r.json(), 'id').pop()
+		return agentID
+	else:
 		printError("failed to fetch agent ID ")
 
 # machines don't exist apparently so this is useless
 def getMachineName(s, id):
 	printLog('Fetching Machine Name For: ' + id)
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/' + id)
-		if printAndCheckStatusCode(r):
-			machineName = get_all(r.json(), 'name').pop()
-			return machineName
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/' + id)
+	if printAndCheckStatusCode(r):
+		machineName = get_all(r.json(), 'name').pop()
+		return machineName
+	else:
 		printError("failed Fetching Machine Information ")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -289,11 +279,10 @@ def getMachineName(s, id):
 # machines don't exist apparently
 def getNumberofMachines(s):
 	printLog('Fetching number of Machines')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/count')
-		if printAndCheckStatusCode(r):
-			return r.json()
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/count')
+	if printAndCheckStatusCode(r):
+		return r.json()
+	else:
 		printError("failed Fetching Machine Information ")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -301,11 +290,10 @@ def getNumberofMachines(s):
 # I'm actually not sure if this works or not it is an AGENT ACTION TODO: research that
 def updateAgentSoftware(s, machineName):
 	printLog('Updating Agents software')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/update-software?query=' +machineName)
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/update-software?query=' +machineName)
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to update software ")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -314,11 +302,10 @@ def updateAgentSoftware(s, machineName):
 # warning - this turns off the agent's machine based on id
 def shutdownAgent(s, id):
 	printLog('Updating Agents software')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/shutdown?id__in=' +id)
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/shutdown?id__in=' +id)
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to update software ")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -326,11 +313,10 @@ def shutdownAgent(s, id):
 # warning - this restarts the agent's machine based on id
 def restartAgent(s, id):
 	printLog('Restarting Agents Hardware')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/restart-machined')
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/restart-machined')
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to restart agents hardware ")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -338,11 +324,10 @@ def restartAgent(s, id):
 # I uninstalled successfully, unsure of difference between this and decommisioning
 def uninstallAgent(s, id):
 	printLog('Uninstalling Agent')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/uninstall?id__in=' +id)
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/uninstall?id__in=' +id)
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to uninstall")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -350,11 +335,10 @@ def uninstallAgent(s, id):
 # Doesn't seem to do anything
 def recommissionAgent(s, id):
 	printLog('Recommissioning Agent: '+id)
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/recommission')
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/recommission')
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to recommission")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -362,11 +346,10 @@ def recommissionAgent(s, id):
 # For when you accidently disconnect an agents machine from the network
 def reconnectAgentToNetwork(s, id):
 	printLog('Reconnecting Agent to network')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/connect')
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/connect')
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to reconnect agent to network")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -375,11 +358,10 @@ def reconnectAgentToNetwork(s, id):
 # doesn't seem to do anything
 def decommissionAgent(s, id):
 	printLog('Decommissioning Agent: ' + id)
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/decommission')
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/decommission')
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to decommission")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -388,11 +370,10 @@ def decommissionAgent(s, id):
 # to reconnect you to the network 
 def disconnectAgentFromNetwork(s, id):
 	printLog('Deconnecting Agent from network')
-	try:
-		r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/disconnect')
-		if printAndCheckStatusCode(r):
-			pass
-	except:
+	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/disconnect')
+	if printAndCheckStatusCode(r):
+		pass
+	else:
 		printError("failed to deconnect agent from network")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -400,11 +381,10 @@ def disconnectAgentFromNetwork(s, id):
 # returns a giant (but pretty) json dump of all the data of the users on the account
 def getAllUsers(s):
 	printLog('Listing all Users')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
-		if printAndCheckStatusCode(r):
-			return json.dumps(r.json(), indent=4)
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	if printAndCheckStatusCode(r):
+		return json.dumps(r.json(), indent=4)
+	else:
 		printError("failed to list users")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -412,12 +392,11 @@ def getAllUsers(s):
 # returns the API creation/expiration dates for the user
 def getAPITokenDetails(s,userid):
 	printLog('Showing API Token Details')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid+'/api-token-details')
-		if printAndCheckStatusCode(r):
-			print 'token details:'
-			return str(json.dumps(r.json(), indent=4)).translate(None, '}{')
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid+'/api-token-details')
+	if printAndCheckStatusCode(r):
+		print 'token details:'
+		return str(json.dumps(r.json(), indent=4)).translate(None, '}{')
+	else:
 		printError("failed to show API token details")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -425,11 +404,10 @@ def getAPITokenDetails(s,userid):
 # returns all of the details in a pretty json response of the user's details
 def getUserDetails(s,userid):
 	printLog('Showing User Details')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
-		if printAndCheckStatusCode(r):
-			return json.dumps(r.json(), indent=4)
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
+	if printAndCheckStatusCode(r):
+		return json.dumps(r.json(), indent=4)
+	else:
 		printError("failed to show user details")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -437,13 +415,13 @@ def getUserDetails(s,userid):
 # parses through a json response of user data based on userid to only return the full name
 def getUserFullName(s, userid):
 	printLog('Showing User Full Name')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
-		if printAndCheckStatusCode(r):
-			data = r.json()
-			name = data["full_name"] 
-			return name
-	except:
+
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
+	if printAndCheckStatusCode(r):
+		data = r.json()
+		name = data["full_name"] 
+		return name
+	else:
 		printError("failed to show user full name")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
@@ -458,16 +436,15 @@ def getUserFullName(s, userid):
 # but were not limited on API calls so that's fine
 def getUserIDFromUsername(s, usrname):
 	printLog('retrieving user ID')
-	try:
-		r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
-		if printAndCheckStatusCode(r):
-			data = r.json()
-			for item in data:
-				if usrname in item["username"]:
-					theID = item["id"] 
-					return theID
-			return None
-	except:
+	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	if printAndCheckStatusCode(r):
+		data = r.json()
+		for item in data:
+			if usrname in item["username"]:
+				theID = item["id"] 
+				return theID
+		return None
+	else:
 		printError("failed to retrieve user ID")
 		if r.json() is not none:
 			print 'raw json data:' + r.json()
