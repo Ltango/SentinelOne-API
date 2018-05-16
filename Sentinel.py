@@ -23,7 +23,6 @@ import getpass
 # The most difficult aspect is the inconsistent and wildly constructed json responses
 # and learning how to parse through the information to find what you need
 
-# can clean up error handling
 def main():
 
 	username = 'your_username'
