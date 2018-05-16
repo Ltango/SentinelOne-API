@@ -22,9 +22,8 @@ import getpass
 # agents through the API.
 # The most difficult aspect is the inconsistent and wildly constructed json responses
 # and learning how to parse through the information to find what you need
-
+baseurl = 'https://company.sentinelone.net'
 def main():
-
 	username = 'your_username'
 	password = 'your_password'
 	APIToken = 'your_API_token'
@@ -126,7 +125,7 @@ def login(s, uname, passw, api_token):
 		'username' : uname,
 		'password' : passw
 	}
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/users/login', data = payload)
+	r = s.post(baseurl + '/web/api/v1.6/users/login', data = payload)
 	if printAndCheckStatusCode(r):
 		printSuccess('Success!')
 		try:
@@ -146,7 +145,7 @@ def login(s, uname, passw, api_token):
 # you have to keep visiting
 def logout(s):
 	printLog('Logging out...')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/users/logout')
+	r = s.post(baseurl + '/web/api/v1.6/users/logout')
 	if printAndCheckStatusCode(r):
 		s.close()
 	else:
@@ -155,7 +154,7 @@ def logout(s):
 #get an agents pass phrase based on agentID - so far I haven't needed it
 def getPassPhrase(s, agentID):
 	printLog('Fetching PassPhrase for ' + str(agentID))
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/'+ agentID + '/passphrase')
+	r = s.get(baseurl + '/web/api/v1.6/agents/'+ agentID + '/passphrase')
 	if printAndCheckStatusCode(r):
 		thePassPhrase = get_all(r.json(), 'passphrase').pop()
 		return thePassPhrase
@@ -165,7 +164,7 @@ def getPassPhrase(s, agentID):
 #you can get the UUID from the agentID - don't ask me why there are so many different IDs
 def getAgentUUID(s,agentID):
 	printLog('Fetching UUID for ' + str(agentID))
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID)
+	r = s.get(baseurl + '/web/api/v1.6/agents/' + agentID)
 	if printAndCheckStatusCode(r):
 		agentUUID = get_all(r.json(), 'uuid').pop()
 		return agentUUID
@@ -176,7 +175,7 @@ def getAgentUUID(s,agentID):
 # this can easily be parsed using get_all() but I've barely needed to use this function
 def listUsers(s):
 	printLog('listing all users...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	r = s.get(baseurl + '/web/api/v1.6/users')
 	if printAndCheckStatusCode(r):
 		print r.json()
 	else:
@@ -185,7 +184,7 @@ def listUsers(s):
 #get a JSON response of agent applications based on agentID
 def getAgentApplications(s, agentID):
 	printLog('listing agent applications...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/' + agentID + '/applications')
+	r = s.get(baseurl + '/web/api/v1.6/agents/' + agentID + '/applications')
 	if printAndCheckStatusCode(r):
 		return r.json()
 	else:
@@ -194,7 +193,7 @@ def getAgentApplications(s, agentID):
 #gets a JSON response based on the agentUUID 
 def getByUUID(s, agentUUID):
 	printLog('getting agent by UUID...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/by-uuid/' + agentUUID)
+	r = s.get(baseurl + '/web/api/v1.6/agents/by-uuid/' + agentUUID)
 	if printAndCheckStatusCode(r):
 		print r.json()
 	else:
@@ -203,7 +202,7 @@ def getByUUID(s, agentUUID):
 #useless base method
 def iterator(s):
 	printLog('iterator...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator')
+	r = s.get(baseurl + '/web/api/v1.6/agents/iterator')
 	if printAndCheckStatusCode(r):
 		data = json.loads(r.content)
 		print data['data']
@@ -213,7 +212,7 @@ def iterator(s):
 #this should be how we find ids
 def iteratorFindByName(s, name):
 	printLog('iterator finding by name...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + name + '&limit=1')
+	r = s.get(baseurl + '/web/api/v1.6/agents/iterator?query=' + name + '&limit=1')
 	if printAndCheckStatusCode(r):
 		return get_all(r.json(), 'id').pop()
 	else:
@@ -222,7 +221,7 @@ def iteratorFindByName(s, name):
 # this should be how we find ids (probably more useful b/c ip)
 def iteratorFindAgentIDByIP(s, ip):
 	printLog('iterator finding ID by IP...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	r = s.get(baseurl + '/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
 	if printAndCheckStatusCode(r):
 		return get_all(r.json(), 'id').pop()
 	else:
@@ -231,7 +230,7 @@ def iteratorFindAgentIDByIP(s, ip):
 # not really used since I haven't found a use for UUID's yet
 def iteratorFindAgentUUIDByIP(s, ip):
 	printLog('iterator UUID finding by IP...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	r = s.get(baseurl + '/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
 	if printAndCheckStatusCode(r):
 		return get_all(r.json(), 'uuid').pop()
 	else:
@@ -240,7 +239,7 @@ def iteratorFindAgentUUIDByIP(s, ip):
 # returns agent information based on ip
 def getAgentInformation(s, ip):
 	printLog('returning Agent Information...')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
+	r = s.get(baseurl + '/web/api/v1.6/agents/iterator?query=' + ip + '&limit=1')
 	if printAndCheckStatusCode(r):
 		machineName = get_all(r.json(), 'computer_name').pop()
 		agentID = get_all(r.json(), 'id').pop()
@@ -255,8 +254,8 @@ def getAgentInformation(s, ip):
 # probably never need to do this again
 def getAllAgentID(s):
 	printLog('Fetching All agent IDs')
-	#r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&skip=300&include_decommissioned=true')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/agents?limit=100&include_decommissioned=true')
+	#r = s.get(baseurl + '/web/api/v1.6/agents?limit=100&skip=300&include_decommissioned=true')
+	r = s.get(baseurl + '/web/api/v1.6/agents?limit=100&include_decommissioned=true')
 	if printAndCheckStatusCode(r):
 		agentID = get_all(r.json(), 'id').pop()
 		return agentID
@@ -266,7 +265,7 @@ def getAllAgentID(s):
 # machines don't exist apparently so this is useless
 def getMachineName(s, id):
 	printLog('Fetching Machine Name For: ' + id)
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/' + id)
+	r = s.get(baseurl + '/web/api/v1.6/machines/' + id)
 	if printAndCheckStatusCode(r):
 		machineName = get_all(r.json(), 'name').pop()
 		return machineName
@@ -278,7 +277,7 @@ def getMachineName(s, id):
 # machines don't exist apparently
 def getNumberofMachines(s):
 	printLog('Fetching number of Machines')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/machines/count')
+	r = s.get(baseurl + '/web/api/v1.6/machines/count')
 	if printAndCheckStatusCode(r):
 		return r.json()
 	else:
@@ -289,7 +288,7 @@ def getNumberofMachines(s):
 # I'm actually not sure if this works or not it is an AGENT ACTION TODO: research that
 def updateAgentSoftware(s, machineName):
 	printLog('Updating Agents software')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/update-software?query=' +machineName)
+	r = s.post(baseurl + '/web/api/v1.6/agents/update-software?query=' +machineName)
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -301,7 +300,7 @@ def updateAgentSoftware(s, machineName):
 # warning - this turns off the agent's machine based on id
 def shutdownAgent(s, id):
 	printLog('Updating Agents software')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/shutdown?id__in=' +id)
+	r = s.post(baseurl + '/web/api/v1.6/agents/shutdown?id__in=' +id)
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -312,7 +311,7 @@ def shutdownAgent(s, id):
 # warning - this restarts the agent's machine based on id
 def restartAgent(s, id):
 	printLog('Restarting Agents Hardware')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/restart-machined')
+	r = s.post(baseurl + '/web/api/v1.6/agents/'+id+'/restart-machined')
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -323,7 +322,7 @@ def restartAgent(s, id):
 # I uninstalled successfully, unsure of difference between this and decommisioning
 def uninstallAgent(s, id):
 	printLog('Uninstalling Agent')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/uninstall?id__in=' +id)
+	r = s.post(baseurl + '/web/api/v1.6/agents/uninstall?id__in=' +id)
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -334,7 +333,7 @@ def uninstallAgent(s, id):
 # Doesn't seem to do anything
 def recommissionAgent(s, id):
 	printLog('Recommissioning Agent: '+id)
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/recommission')
+	r = s.post(baseurl + '/web/api/v1.6/agents/'+id+'/recommission')
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -345,7 +344,7 @@ def recommissionAgent(s, id):
 # For when you accidently disconnect an agents machine from the network
 def reconnectAgentToNetwork(s, id):
 	printLog('Reconnecting Agent to network')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/connect')
+	r = s.post(baseurl + '/web/api/v1.6/agents/'+id+'/connect')
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -357,7 +356,7 @@ def reconnectAgentToNetwork(s, id):
 # doesn't seem to do anything
 def decommissionAgent(s, id):
 	printLog('Decommissioning Agent: ' + id)
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/decommission')
+	r = s.post(baseurl + '/web/api/v1.6/agents/'+id+'/decommission')
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -369,7 +368,7 @@ def decommissionAgent(s, id):
 # to reconnect you to the network 
 def disconnectAgentFromNetwork(s, id):
 	printLog('Deconnecting Agent from network')
-	r = s.post('https://meredith.sentinelone.net/web/api/v1.6/agents/'+id+'/disconnect')
+	r = s.post(baseurl + '/web/api/v1.6/agents/'+id+'/disconnect')
 	if printAndCheckStatusCode(r):
 		pass
 	else:
@@ -380,7 +379,7 @@ def disconnectAgentFromNetwork(s, id):
 # returns a giant (but pretty) json dump of all the data of the users on the account
 def getAllUsers(s):
 	printLog('Listing all Users')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	r = s.get(baseurl + '/web/api/v1.6/users')
 	if printAndCheckStatusCode(r):
 		return json.dumps(r.json(), indent=4)
 	else:
@@ -391,7 +390,7 @@ def getAllUsers(s):
 # returns the API creation/expiration dates for the user
 def getAPITokenDetails(s,userid):
 	printLog('Showing API Token Details')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid+'/api-token-details')
+	r = s.get(baseurl + '/web/api/v1.6/users/'+userid+'/api-token-details')
 	if printAndCheckStatusCode(r):
 		print 'token details:'
 		return str(json.dumps(r.json(), indent=4)).translate(None, '}{')
@@ -403,7 +402,7 @@ def getAPITokenDetails(s,userid):
 # returns all of the details in a pretty json response of the user's details
 def getUserDetails(s,userid):
 	printLog('Showing User Details')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
+	r = s.get(baseurl + '/web/api/v1.6/users/'+userid)
 	if printAndCheckStatusCode(r):
 		return json.dumps(r.json(), indent=4)
 	else:
@@ -415,7 +414,7 @@ def getUserDetails(s,userid):
 def getUserFullName(s, userid):
 	printLog('Showing User Full Name')
 
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users/'+userid)
+	r = s.get(baseurl + '/web/api/v1.6/users/'+userid)
 	if printAndCheckStatusCode(r):
 		data = r.json()
 		name = data["full_name"] 
@@ -435,7 +434,7 @@ def getUserFullName(s, userid):
 # but were not limited on API calls so that's fine
 def getUserIDFromUsername(s, usrname):
 	printLog('retrieving user ID')
-	r = s.get('https://meredith.sentinelone.net/web/api/v1.6/users')
+	r = s.get(baseurl + '/web/api/v1.6/users')
 	if printAndCheckStatusCode(r):
 		data = r.json()
 		for item in data:
